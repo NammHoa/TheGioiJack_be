@@ -1,67 +1,177 @@
 const UserService = require('../services/UserServive')
 const JwtService = require('../services/JwtService')
 
+// const createUser = async (req, res) => {
+//     try {
+//         const { name, email, password, confirmPassword, phone } = req.body
+//         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
+//         const isCheckEmail = reg.test(email)
+//         if (!email || !password || !confirmPassword) {
+//             return res.status(200).json({
+//                 status: 'ERR',
+//                 message: 'Vui lòng không bỏ trống'
+//             })
+//         } else if (!isCheckEmail) {
+//             return res.status(200).json({
+//                 status: 'ERR',
+//                 message: 'Vui lòng nhập đúng định dạng @gmail.com'
+//             })
+//         } else if (password !== confirmPassword) {
+//             return res.status(200).json({
+//                 status: 'ERR',
+//                 message: 'Mật khẩu không trùng! vui lòng nhập lại'
+//             })
+//         }
+//         const response = await UserService.createUser(req.body)
+//         return res.status(200).json(response)
+//     } catch (e) {
+//         return res.status(404).json({
+//             message: e
+//         })
+//     }
+// }
 const createUser = async (req, res) => {
     try {
-        const { name, email, password, confirmPassword, phone } = req.body
-        const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
-        const isCheckEmail = reg.test(email)
-        if (!email || !password || !confirmPassword) {
+        const { name, email, password, confirmPassword, phone } = req.body;
+        const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+        const isCheckEmail = reg.test(email);
+
+        if (!email) {
             return res.status(200).json({
                 status: 'ERR',
-                message: 'Bắt buộc nhập đầu vào'
-            })
-        } else if (!isCheckEmail) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'Vui lòng nhập @ vào email'
-            })
-        } else if (password !== confirmPassword) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'Mật khẩu không trùng! vui lòng nhập lại'
-            })
+                message: 'Vui lòng điền email'
+            });
         }
-        const response = await UserService.createUser(req.body)
-        return res.status(200).json(response)
+        if (!password) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Vui lòng điền mật khẩu'
+            });
+        }
+        if (!confirmPassword) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Vui lòng điền xác nhận mật khẩu'
+            });
+        }
+
+        if (!isCheckEmail) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Vui lòng nhập đúng định dạng email (ví dụ: example@gmail.com)'
+            });
+        }
+        if (password.length < 6 || password.length > 20) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Mật khẩu phải có độ dài từ 6 đến 20 ký tự'
+            });
+        }
+        if (password !== confirmPassword) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Mật khẩu không trùng! Vui lòng nhập lại.'
+            });
+        }
+        const response = await UserService.createUser(req.body);
+        return res.status(200).json(response);
+
     } catch (e) {
+
         return res.status(404).json({
-            message: e
-        })
+            status: 'ERR',
+            message: 'Có lỗi xảy ra. Vui lòng thử lại sau.',
+            error: e.message
+        });
     }
-}
+};
+
+// const loginUser = async (req, res) => {
+//     try {
+//         const { email, password } = req.body
+//         const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
+//         const isCheckEmail = reg.test(email)
+//         if (!email || !password) {
+//             return res.status(200).json({
+//                 status: 'ERR',
+//                 message: 'Đầu vào là bắt buộc'
+//             })
+//         } else if (!isCheckEmail) {
+//             return res.status(200).json({
+//                 status: 'ERR',
+//                 message: 'Đầu vào phải là email'
+//             })
+//         }
+//         const response = await UserService.loginUser(req.body)
+//         const { refresh_token, ...newReponse } = response
+//         res.cookie('refresh_token', refresh_token, {
+//             httpOnly: true,
+//             secure: false,
+//             sameSite: 'strict',
+//             path: '/',
+//         })
+//         return res.status(200).json({ ...newReponse, refresh_token })
+//     } catch (e) {
+//         return res.status(404).json({
+//             message: e
+//         })
+//     }
+// }
 
 const loginUser = async (req, res) => {
     try {
-        const { email, password } = req.body
-        const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/
-        const isCheckEmail = reg.test(email)
-        if (!email || !password) {
+        const { email, password } = req.body;
+        const reg = /^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+        const isCheckEmail = reg.test(email);
+
+        if (!email) {
             return res.status(200).json({
                 status: 'ERR',
-                message: 'Đầu vào là bắt buộc'
-            })
-        } else if (!isCheckEmail) {
-            return res.status(200).json({
-                status: 'ERR',
-                message: 'Đầu vào phải là email'
-            })
+                message: 'Vui lòng điền email'
+            });
         }
-        const response = await UserService.loginUser(req.body)
-        const { refresh_token, ...newReponse } = response
+
+        if (!isCheckEmail) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Đầu vào phải là email đúng định dạng (ví dụ: example@gmail.com)'
+            });
+        }
+
+        if (!password) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Vui lòng điền mật khẩu'
+            });
+        }
+        const response = await UserService.loginUser(req.body);
+
+        if (!response) {
+            return res.status(200).json({
+                status: 'ERR',
+                message: 'Tài khoản chưa được đăng ký. Vui lòng kiểm tra lại thông tin hoặc đăng ký tài khoản.'
+            });
+        }
+
+
+        const { refresh_token, ...newResponse } = response;
         res.cookie('refresh_token', refresh_token, {
             httpOnly: true,
-            secure: false,
+            secure: false, 
             sameSite: 'strict',
             path: '/',
-        })
-        return res.status(200).json({ ...newReponse, refresh_token })
+        });
+        return res.status(200).json({ ...newResponse, refresh_token });
     } catch (e) {
-        return res.status(404).json({
-            message: e
-        })
+
+        return res.status(500).json({
+            status: 'ERR',
+            message: 'Có lỗi xảy ra trong quá trình xử lý.',
+            error: e.message
+        });
     }
-}
+};
+
 
 const updateUser = async (req, res) => {
     try {

@@ -6,7 +6,7 @@ const createProduct = async (req, res) => {
         if (!name || !image || !type || !countInStock || !price || !rating || !discount || !manufacturer) {
             return res.status(200).json({
                 status: 'ERR',
-                message: 'Bắt buộc nhập đầu vào'
+                message: 'Vui lòng không bỏ trống;'
             })
         }
         const response = await ProductService.createProduct(req.body)
