@@ -290,6 +290,12 @@ const logoutUser = async (req, res) => {
         })
     }
 }
+
+
+
+
+
+
 module.exports = {
     createUser,
     loginUser,
@@ -299,5 +305,6 @@ module.exports = {
     getDetailsUser,
     refreshToken,
     logoutUser,
-    deleteMany
+    deleteMany,
+    
 }

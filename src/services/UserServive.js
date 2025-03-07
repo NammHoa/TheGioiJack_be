@@ -1,5 +1,7 @@
 const User = require("../models/UserModel")
 const bcrypt = require("bcrypt")
+
+
 const { genneralAccessToken, genneralRefreshToken } = require("./JwtService")
 
 const createUser = (newUser) => {
@@ -180,6 +182,9 @@ const getDetailsUser = (id) => {
     })
 }
 
+
+
+
 module.exports = {
     createUser,
     loginUser,
@@ -187,5 +192,6 @@ module.exports = {
     deleteUser,
     getAllUser,
     getDetailsUser,
-    deleteManyUser
+    deleteManyUser,
+ 
 }
