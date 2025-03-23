@@ -88,10 +88,36 @@ const getAllOrder = async (req, res) => {
     }
 }
 
+
+const updateOrderStatus = async (req, res) => {
+    try {
+        const { orderId, status } = req.body;
+
+        if (!orderId || !status) {
+            return res.status(400).json({
+                status: 'ERR',
+                message: 'orderId và status là bắt buộc',
+            });
+        }
+
+        const response = await OrderService.updateOrderStatus(orderId, status);
+        return res.status(200).json(response);
+    } catch (e) {
+        return res.status(500).json({
+            status: 'ERR',
+            message: e.message,
+        });
+    }
+};
+
+
+
 module.exports = {
     createOrder,
     getAllOrderDetails,
     getDetailsOrder,
     cancelOrderDetails,
-    getAllOrder
+    getAllOrder,
+    updateOrderStatus
+    
 }

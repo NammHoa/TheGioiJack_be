@@ -77,30 +77,58 @@ const createOrder = (newOrder) => {
 }
 
 
-const getAllOrderDetails = (id) => {
+// const getAllOrderDetails = (id) => {
+//     return new Promise(async (resolve, reject) => {
+//         try {
+//             const order = await Order.find({
+//                 user: id
+//             }).sort({ createdAt: -1, updatedAt: -1 })
+//             if (order === null) {
+//                 resolve({
+//                     status: 'ERR',
+//                     message: 'The order is not defined'
+//                 })
+//             }
+
+//             resolve({
+//                 status: 'OK',
+//                 message: 'Thành công',
+//                 data: order
+//             })
+//         } catch (e) {
+//             // console.log('e', e)
+//             reject(e)
+//         }
+//     })
+// }
+const getAllOrderDetails = (userId) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const order = await Order.find({
-                user: id
-            }).sort({ createdAt: -1, updatedAt: -1 })
-            if (order === null) {
-                resolve({
+            const orders = await Order.find({ user: userId }).sort({ createdAt: -1 });
+
+            if (!orders.length) {
+                return resolve({
                     status: 'ERR',
-                    message: 'The order is not defined'
-                })
+                    message: 'Không có đơn hàng nào',
+                });
             }
 
             resolve({
                 status: 'OK',
-                message: 'Thành công',
-                data: order
-            })
+                message: 'Lấy danh sách đơn hàng thành công',
+                data: orders.map(order => ({
+                    _id: order._id,
+                    orderItems: order.orderItems,
+                    totalPrice: order.totalPrice,
+                    status: order.status, 
+                    createdAt: order.createdAt,
+                })),
+            });
         } catch (e) {
-            // console.log('e', e)
-            reject(e)
+            reject(e);
         }
-    })
-}
+    });
+};
 
 const getOrderDetails = (id) => {
     return new Promise(async (resolve, reject) => {
@@ -196,10 +224,51 @@ const getAllOrder = () => {
     })
 }
 
+const updateOrderStatus = (orderId, status) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const validStatuses = ['Chưa giao hàng', 'Đang xử lý', 'Đang giao hàng', 'Đã giao hàng'];
+
+            if (!validStatuses.includes(status)) {
+                return resolve({
+                    status: 'ERR',
+                    message: 'Trạng thái không hợp lệ',
+                });
+            }
+
+            const updatedOrder = await Order.findByIdAndUpdate(
+                orderId,
+                { status },
+                { new: true }
+            );
+
+            if (!updatedOrder) {
+                return resolve({
+                    status: 'ERR',
+                    message: 'Không tìm thấy đơn hàng',
+                });
+            }
+
+            resolve({
+                status: 'OK',
+                message: 'Cập nhật trạng thái đơn hàng thành công',
+                data: updatedOrder,
+            });
+        } catch (e) {
+            reject(e);
+        }
+    });
+};
+
+
+
+
 module.exports = {
     createOrder,
     getAllOrderDetails,
     getOrderDetails,
     cancelOrderDetails,
-    getAllOrder
+    getAllOrder,
+    updateOrderStatus
+
 }
